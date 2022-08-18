@@ -1,0 +1,38 @@
+language: node_js
+os: 
+  - linux
+dist: xenial
+node_js:
+  - "8"
+branches:
+  only:
+    - master
+    - release
+    - develop
+install:
+  - npm install
+stages:
+  - test
+  - build
+jobs:
+  include:
+    - stage: test
+      script:
+        - node --version
+        - npm --version
+        - echo "Testing Started ..."
+        - npm test
+        - echo "Testing Finished."
+    - stage: build
+      script:
+        - echo "NPM Building Started ..."
+        - npm version
+        - npm run build
+        - echo "NPM Building Finished."
+      deploy:
+        provider: npm
+        email: "$NPM_EMAIL"
+        api_token: "$NPM_TOKEN"
+        skip_cleanup: true
+        on:
+          branch: master
